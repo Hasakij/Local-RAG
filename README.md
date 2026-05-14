@@ -17,3 +17,16 @@ Access API at: http://localhost:8000
 3. **Run evaluation**:
    ```text
    docker-compose exec evaluation python evals.py
+
+## Evaluation results
+Scores for 5 different books
+### RL book
+![RL Results](rag_scores_rl.png)
+### ML book
+![ML Results](rag_scores_ml.png)
+### DL book
+![DL Results](rag_scores_dl.png)
+### LBDL book
+![LBDL Results](rag_scores_lbdl.png)
+### DLM book
+![DLM Results](rag_scores_dlm.png)
