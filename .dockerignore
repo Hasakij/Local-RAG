@@ -1,0 +1,7 @@
+venv/
+__pycache__/
+*.gguf
+chroma_db/
+.env
+.git/
+*.csv

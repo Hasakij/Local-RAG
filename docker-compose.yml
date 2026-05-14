@@ -1,0 +1,62 @@
+version: '3.8'
+services:
+  # Main API server
+  api:
+    build: .
+    container_name: local-rag-api
+    runtime: nvidia
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./:/app
+    depends_on:
+      - vectordb
+    environment:
+      - USER_AGENT="LocalRAG"
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
+      - PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    command: uvicorn api:app --host 0.0.0.0 --port 8000
+
+  # Vector database for embeddings
+  vectordb:
+    image: chromadb/chroma:latest
+    container_name: rag_database
+    ports:
+      - "8001:8000"
+    volumes:
+      - chroma_data:/chroma/chroma
+
+  # Streamlit
+  frontend:
+    build: .
+    container_name: local-rag-ui
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./:/app
+    command: streamlit run app.py --server.address=0.0.0.0
+    depends_on:
+      - api
+
+  # Ragas metrics
+  evaluation:
+    image: llama-api:latest
+    container_name: local-rag-evals
+    volumes:
+      - .:/app
+    command: tail -f /dev/null
+    depends_on:
+      - api
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - API_URL=http://api:8000
+volumes:
+  chroma_data:

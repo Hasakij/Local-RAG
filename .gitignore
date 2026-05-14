@@ -1,0 +1,9 @@
+.env
+__pycache__/
+*.csv
+*.png
+*.jpg
+*.gguf
+chroma_db/
+*.pdf
+venv/
